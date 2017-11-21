@@ -7,12 +7,30 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <Menu HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="520"/>
-
-        <Button x:Name="startButton" Content="Démarrer" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="startButton_Click" BorderBrush="{x:Null}" Background="{x:Null}" Margin="4,1,0,0"/>
-        <Button x:Name="stopButton" Content="Supression" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="startButton_Click" BorderBrush="{x:Null}" Background="{x:Null}" Margin="91,1,0,0"/>
-        <Button x:Name="hideButton" Content="Masquer" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="startButton_Click" BorderBrush="{x:Null}" Background="{x:Null}" Margin="179,1,0,0"/>
-        <Button x:Name="quitButton" Content="Quiter" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Click="startButton_Click" BorderBrush="{x:Null}" Background="{x:Null}" Margin="259,1,0,0"/>
-
+        <ListView Margin="113,52,143,102.8" Name="lvProcess" BorderBrush="{x:Null}" SelectionChanged="lvProcess_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Process Name" Width="120" DisplayMemberBinding="{Binding ProcessName}" />
+                    <GridViewColumn Header="PID" Width="120" DisplayMemberBinding="{Binding PID}" />
+                </GridView>
+            </ListView.View>
+            <Button Content="Button" Height="100" Width="75"/>
+        </ListView>
+        <Menu HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="520">
+            <MenuItem Header="Start Process" Height="24" Width="100">
+                <MenuItem x:Name="startBallon" Header="Start ballon" Click="startBallon_Click">
+                </MenuItem>
+                <MenuItem x:Name="startPremier" Header="Start premier" Click="startPremier_Click"/>
+            </MenuItem>
+            <MenuItem x:Name="infoMenu" Header="Info" Height="24" Width="43"/>
+            <MenuItem x:Name="stopMenu" Header="Stop Process" Height="24" Width="100"/>
+            <MenuItem Header="Quit" Height="24" Width="100"/>
+        </Menu>
+        <TextBlock HorizontalAlignment="Left" Margin="40,245,0,0" TextWrapping="Wrap" Text="Ballon Count:" VerticalAlignment="Top" RenderTransformOrigin="0.306,0.589"/>
+        <TextBlock HorizontalAlignment="Left" Margin="175,245,0,0" TextWrapping="Wrap" Text="Premier Count:" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="345,245,0,0" TextWrapping="Wrap" Text="Count:" VerticalAlignment="Top"/>
+        <TextBlock x:Name="ballonCountView" HorizontalAlignment="Left" Margin="125,245,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.306,0.589"/>
+        <TextBlock x:Name="premierCountView" HorizontalAlignment="Left" Margin="267,245,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.306,0.589"/>
+        <TextBlock x:Name="countView" HorizontalAlignment="Left" Margin="396,245,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top" RenderTransformOrigin="0.306,0.589"/>
     </Grid>
 </Window>
