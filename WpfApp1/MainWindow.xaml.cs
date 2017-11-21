@@ -31,7 +31,6 @@ namespace WpfApp1
             this.listProcess = new LinkedList<ProcessNode>();
         }
 
-
         private void setViewCounters(int ballonCount, int premierCount)
         {
             ballonCountView.Text = ballonCount.ToString();
@@ -39,13 +38,15 @@ namespace WpfApp1
             countView.Text = (ballonCount + premierCount).ToString();
         }
 
-        private void stopAllProcess(LinkedList<ProcessNode> listProcess)
+        private void stopAllProcess()
         {
             foreach (ProcessNode pN in listProcess)
             {
                 pN.process.Kill();
                 lvProcess.Items.Remove(pN.processViewItem);
             }
+            ProcessNode.setBallonCount(0);
+            ProcessNode.setPremierCount(0);
             listProcess = new LinkedList<ProcessNode>();
             setViewCounters(0, 0);
         }
@@ -67,14 +68,10 @@ namespace WpfApp1
                 {
                     lvProcess.Items.Remove(pN.processViewItem);
                     if (pN.name == "ballon")
-                    {
-                        pN.setBallonCount(pN.getBallonCount() - 1);
-                    }
+                        ProcessNode.setBallonCount(ProcessNode.getBallonCount() - 1);
                     else
-                    {
-                        pN.setPremierCount(pN.getPremierCount() - 1);
-                    }
-                    setViewCounters(pN.getBallonCount(), pN.getPremierCount());
+                        ProcessNode.setPremierCount(ProcessNode.getPremierCount() - 1);
+                    setViewCounters(ProcessNode.getBallonCount(), ProcessNode.getPremierCount());
                     listProcess.Remove(pN);
                     break;
                 }
@@ -83,29 +80,27 @@ namespace WpfApp1
         }
         private void startBallon_Click(object sender, RoutedEventArgs e)
         {
-            if (listProcess.Count == 0 || listProcess.First().getBallonCount() < 5)
+            // if linkedlist is vide, then avoid check the class variable of count
+            if (listProcess.Count == 0 || ProcessNode.getBallonCount() < 5)
             {
-
                 Process p = new Process();
                 p.StartInfo = new ProcessStartInfo("Ballon.exe");
                 p.EnableRaisingEvents = true;
                 p.Exited += new EventHandler(process_Exited);
                 p.Start();
                 int pid = p.Id;
-                ProcessItem item = new ProcessItem() { ProcessName = "ballon.exe", PID = pid };
+                ProcessItem item = new ProcessItem("ballon.exe", pid);
                 listProcess.AddLast(new ProcessNode(p, "ballon", item));
                 lvProcess.Items.Add(item);
-                setViewCounters(listProcess.First().getBallonCount(), listProcess.First().getPremierCount());
+                setViewCounters(ProcessNode.getBallonCount(), ProcessNode.getPremierCount());
             }
             else
-            {
                 MessageBox.Show("Cannot create more than 5 processes", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
         }
 
         private void startPremier_Click(object sender, RoutedEventArgs e)
         {
-            if (listProcess.Count == 0 || listProcess.First().getPremierCount() < 5)
+            if (listProcess.Count == 0 || ProcessNode.getPremierCount() < 5)
             {
                 Process p = new Process();
                 p.StartInfo = new ProcessStartInfo("premier.exe");
@@ -113,63 +108,45 @@ namespace WpfApp1
                 p.Exited += new EventHandler(process_Exited);
                 p.Start();
                 int pid = p.Id;
-                ProcessItem item = new ProcessItem() { ProcessName = "premier.exe", PID = pid };
+                ProcessItem item = new ProcessItem("premier.exe", pid);
                 listProcess.AddLast(new ProcessNode(p, "premier", item));
                 lvProcess.Items.Add(item);
-                setViewCounters(listProcess.First().getBallonCount(), listProcess.First().getPremierCount());
+                setViewCounters(ProcessNode.getBallonCount(), ProcessNode.getPremierCount());
             }
             else
-            {
                 MessageBox.Show("Cannot create more than 5 processes", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-        }
-        private void lvProcess_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
         }
 
         private void StopAllProcess_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count <= 0)
-            {
                 MessageBox.Show("No running process", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
             else
-            {
-                stopAllProcess(listProcess);
-            }
+                stopAllProcess();
             
         }
 
         private void StopLastProcess_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count <= 0)
-            {
                 MessageBox.Show("No running process", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else {
+            else
+            {
                 listProcess.Last().process.Kill();
                 lvProcess.Items.Remove(listProcess.Last().processViewItem);
                 if (listProcess.Last().name == "ballon")
-                {
-                    listProcess.Last().setBallonCount(listProcess.Last().getBallonCount() - 1);
-                }
+                    ProcessNode.setBallonCount(ProcessNode.getBallonCount() - 1);
                 else
-                {
-                    listProcess.Last().setPremierCount(listProcess.Last().getPremierCount() - 1);
-                }
-                
-                setViewCounters(listProcess.Last().getBallonCount(), listProcess.Last().getPremierCount());
+                    ProcessNode.setPremierCount(ProcessNode.getPremierCount() - 1);
+                setViewCounters(ProcessNode.getBallonCount(), ProcessNode.getPremierCount());
                 listProcess.RemoveLast();
             }
         }
 
         private void StopLastPremier_Click(object sender, RoutedEventArgs e)
         {
-            if (listProcess.Count <= 0 || listProcess.First().getPremierCount() <= 0)
-            {
+            if (listProcess.Count <= 0 || ProcessNode.getPremierCount() <= 0)
                 MessageBox.Show("No running process for premier.exe", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
             else
             {
                 for (int i = listProcess.Count -1; i >=0; i--)
@@ -180,8 +157,8 @@ namespace WpfApp1
                         ProcessNode toRemove = listProcess.ElementAt(i);
                         toRemove.process.Kill();
                         lvProcess.Items.Remove(toRemove.processViewItem);
-                        toRemove.setPremierCount(toRemove.getPremierCount() - 1);
-                        setViewCounters(toRemove.getBallonCount(), toRemove.getPremierCount());
+                        ProcessNode.setPremierCount(ProcessNode.getPremierCount() - 1);
+                        setViewCounters(ProcessNode.getBallonCount(), ProcessNode.getPremierCount());
                         listProcess.Remove(toRemove);
                         break;
                     }
@@ -191,22 +168,20 @@ namespace WpfApp1
 
         private void stopLastBallon_Click(object sender, RoutedEventArgs e)
         {
-            if (listProcess.Count <= 0 || listProcess.First().getBallonCount() <= 0)
-            {
+            if (listProcess.Count <= 0 || ProcessNode.getBallonCount() <= 0)
                 MessageBox.Show("No running process for ballon.exe", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
             else
             {
                 for (int i = listProcess.Count - 1; i >= 0; i--)
                 {
                     if (listProcess.ElementAt(i).name == "ballon")
                     {
-                        //get last node of type premier from the linkedlist
+                        //get last node of type ballon from the linkedlist
                         ProcessNode toRemove = listProcess.ElementAt(i);
                         toRemove.process.Kill();
                         lvProcess.Items.Remove(toRemove.processViewItem);
-                        toRemove.setBallonCount(toRemove.getBallonCount() - 1);
-                        setViewCounters(toRemove.getBallonCount(), toRemove.getPremierCount());
+                        ProcessNode.setBallonCount(ProcessNode.getBallonCount() - 1);
+                        setViewCounters(ProcessNode.getBallonCount(), ProcessNode.getPremierCount());
                         listProcess.Remove(toRemove);
                         break;
                     }
@@ -218,13 +193,11 @@ namespace WpfApp1
             MessageBoxResult result = MessageBox.Show("Do you really want quit?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
             {
-                stopAllProcess(listProcess);
+                stopAllProcess();
                 System.Windows.Application.Current.Shutdown();
             }
             else
-            {
                 e.Cancel = true;
-            }
         }
 
         private void MenuItem_Click(object sender, RoutedEventArgs e)
@@ -235,6 +208,11 @@ namespace WpfApp1
 
     public class ProcessItem
     {
+        public ProcessItem(string ProcessName, int PID)
+        {
+            this.ProcessName = ProcessName;
+            this.PID = PID;
+        }
         public string ProcessName { get; set; }
         public int PID { get; set; }
     }
@@ -253,28 +231,24 @@ namespace WpfApp1
             this.name = name;
             this.processViewItem = processViewItem;
             if (name == "ballon")
-            {
                 ballonCount += 1;
-            }
             else
-            {
                 premierCount += 1;
-            }
         }
 
-        public int getBallonCount()
+        public static int getBallonCount()
         {
             return ballonCount;
         }
-        public int getPremierCount()
+        public static int getPremierCount()
         {
             return premierCount;
         }
-        public void setBallonCount(int count)
+        public static void setBallonCount(int count)
         {
             ballonCount = count;
         }
-        public void setPremierCount(int count)
+        public static void setPremierCount(int count)
         {
             premierCount = count;
         }
