@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfApp1"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525"
+        Closing="Window_Closing">
     <Grid>
         <ListView Margin="113,52,143,102.8" Name="lvProcess" BorderBrush="{x:Null}" SelectionChanged="lvProcess_SelectionChanged">
             <ListView.View>
@@ -23,8 +24,13 @@
                 <MenuItem x:Name="startPremier" Header="Start premier" Click="startPremier_Click"/>
             </MenuItem>
             <MenuItem x:Name="infoMenu" Header="Info" Height="24" Width="43"/>
-            <MenuItem x:Name="stopMenu" Header="Stop Process" Height="24" Width="100"/>
-            <MenuItem Header="Quit" Height="24" Width="100"/>
+            <MenuItem x:Name="stopMenu" Header="Stop Process" Height="24" Width="100">
+                <MenuItem x:Name="stopLastBallon" Header="Stop last created ballon" Click="stopLastBallon_Click"/>
+                <MenuItem x:Name="StopLastPremier" Header="Stop last created premier" Click="StopLastPremier_Click"/>
+                <MenuItem x:Name="StopLastProcess" Header="Stop last created process" Click="StopLastProcess_Click"/>
+                <MenuItem x:Name="StopAllProcess" Header="Stop all processes" Click="StopAllProcess_Click"/>
+            </MenuItem>
+            <MenuItem Header="Quit" Height="24" Width="100" Click="MenuItem_Click"/>
         </Menu>
         <TextBlock HorizontalAlignment="Left" Margin="40,245,0,0" TextWrapping="Wrap" Text="Ballon Count:" VerticalAlignment="Top" RenderTransformOrigin="0.306,0.589"/>
         <TextBlock HorizontalAlignment="Left" Margin="175,245,0,0" TextWrapping="Wrap" Text="Premier Count:" VerticalAlignment="Top"/>
