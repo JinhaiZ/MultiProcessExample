@@ -15,7 +15,6 @@
                     <GridViewColumn Header="PID" Width="120" DisplayMemberBinding="{Binding PID}" />
                 </GridView>
             </ListView.View>
-            <Button Content="Button" Height="100" Width="75"/>
         </ListView>
         <Menu HorizontalAlignment="Left" Height="24" VerticalAlignment="Top" Width="520">
             <MenuItem Header="Start Process" Height="24" Width="100">

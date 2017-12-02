@@ -23,21 +23,23 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
+        // déclarer une liste pour le management des processus
         private LinkedList<ProcessNode> listProcess;
 
         public MainWindow()
         {
             InitializeComponent();
+            // initialiser cette liste
             this.listProcess = new LinkedList<ProcessNode>();
         }
-
+        // mise à jour les comptuers
         private void setViewCounters(int ballonCount, int premierCount)
         {
             ballonCountView.Text = ballonCount.ToString();
             premierCountView.Text = premierCount.ToString();
             countView.Text = (ballonCount + premierCount).ToString();
         }
-
+        // arrêter tous les processus
         private void stopAllProcess()
         {
             foreach (ProcessNode pN in listProcess)
@@ -45,21 +47,23 @@ namespace WpfApp1
                 pN.process.Kill();
                 lvProcess.Items.Remove(pN.processViewItem);
             }
+            // initialiser les compteurs
             ProcessNode.setBallonCount(0);
             ProcessNode.setPremierCount(0);
             listProcess = new LinkedList<ProcessNode>();
             setViewCounters(0, 0);
         }
+        // handler du éventement lorsque l'utilisateur clique le croix rouge
         private void process_Exited(object sender, System.EventArgs e)
         {
+            // modifier l'état d'un autre processus en utilisant Dispatcher.Invoke
             this.Dispatcher.Invoke(() =>
             {
                 checkClosedProcess();
             });
-            // inspired by this post: https://stackoverflow.com/questions/9732709/the-calling-thread-cannot-access-this-object-because-a-different-thread-owns-it
 
         }
-
+        // mise à jour la listView lorsque l'utilisateur arrête un fênetre
         private void checkClosedProcess()
         {
             foreach (ProcessNode pN in listProcess)
@@ -67,6 +71,7 @@ namespace WpfApp1
                 if (pN.process.HasExited)
                 {
                     lvProcess.Items.Remove(pN.processViewItem);
+                    // mise à jour les compteurs correspondants
                     if (pN.name == "ballon")
                         ProcessNode.setBallonCount(ProcessNode.getBallonCount() - 1);
                     else
@@ -78,6 +83,7 @@ namespace WpfApp1
                 
             }
         }
+        // fonction qui va être appelé lorsque l'utilisateur clique start ballon
         private void startBallon_Click(object sender, RoutedEventArgs e)
         {
             // if linkedlist is vide, then avoid check the class variable of count
@@ -97,7 +103,7 @@ namespace WpfApp1
             else
                 MessageBox.Show("Cannot create more than 5 processes", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
+        // fonction qui va être appelé lorsque l'utilisateur clique start premier
         private void startPremier_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count == 0 || ProcessNode.getPremierCount() < 5)
@@ -116,7 +122,7 @@ namespace WpfApp1
             else
                 MessageBox.Show("Cannot create more than 5 processes", "Alert", MessageBoxButton.OK, MessageBoxImage.Information);
         }
-
+        // fonction qui va être appelé lorsque l'utilisateur clique stop all process
         private void StopAllProcess_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count <= 0)
@@ -125,7 +131,7 @@ namespace WpfApp1
                 stopAllProcess();
             
         }
-
+        // fonction qui va être appelé lorsque l'utilisateur clique stop last process
         private void StopLastProcess_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count <= 0)
@@ -142,7 +148,7 @@ namespace WpfApp1
                 listProcess.RemoveLast();
             }
         }
-
+        // fonction qui va être appelé lorsque l'utilisateur clique stop last premier
         private void StopLastPremier_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count <= 0 || ProcessNode.getPremierCount() <= 0)
@@ -153,7 +159,7 @@ namespace WpfApp1
                 {
                     if (listProcess.ElementAt(i).name == "premier")
                     {
-                        //get last node of type premier from the linkedlist
+                        // obtenir le dernier élément de type premier de la liste listProcess
                         ProcessNode toRemove = listProcess.ElementAt(i);
                         toRemove.process.Kill();
                         lvProcess.Items.Remove(toRemove.processViewItem);
@@ -165,7 +171,7 @@ namespace WpfApp1
                 }
             }
         }
-
+        // fonction qui va être appelé lorsque l'utilisateur clique stop last ballon
         private void stopLastBallon_Click(object sender, RoutedEventArgs e)
         {
             if (listProcess.Count <= 0 || ProcessNode.getBallonCount() <= 0)
@@ -176,7 +182,7 @@ namespace WpfApp1
                 {
                     if (listProcess.ElementAt(i).name == "ballon")
                     {
-                        //get last node of type ballon from the linkedlist
+                        // obtenir le dernier élément de type ballon de la liste listProcess
                         ProcessNode toRemove = listProcess.ElementAt(i);
                         toRemove.process.Kill();
                         lvProcess.Items.Remove(toRemove.processViewItem);
@@ -188,24 +194,22 @@ namespace WpfApp1
                 }
             }
         }
+        // fonction qui va être appelé lorsque l'utilisateur clique le croix rouge de la fênetre principale
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             MessageBoxResult result = MessageBox.Show("Do you really want quit?", "Warning", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (result == MessageBoxResult.Yes)
-            {
                 stopAllProcess();
-                System.Windows.Application.Current.Shutdown();
-            }
             else
                 e.Cancel = true;
         }
-
+        // fonction qui va être appelé lorsque l'utilisateur clique le menu quit
         private void MenuItem_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
     }
-
+    // la classe définit l'élément stocké dans la listView
     public class ProcessItem
     {
         public ProcessItem(string ProcessName, int PID)
@@ -216,7 +220,7 @@ namespace WpfApp1
         public string ProcessName { get; set; }
         public int PID { get; set; }
     }
-
+    // la classe définit l'élément stocké dans la liste listProcess
     public class ProcessNode
     {
         public Process process;
